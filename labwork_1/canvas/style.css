@@ -1,0 +1,21 @@
+body {
+  font-family: monospace;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#myCanvas {
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  border: 2px solid black;
+}
+
+.parameters {
+  display: flex;
+  border: 1px solid black;
+  padding: 10px;
+  gap: 10px;
+}

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Document</title>
+  </head>
+
+  <body>
+    <canvas id="myCanvas"></canvas>
+    <div class="parameters">
+      <div class="input-container">
+        <label for="x-0">x<sub>0</sub></label>
+        <input required type="number" name="x-0" id="x-0">
+      </div>
+      <div class="input-container">
+        <label for="y-0">y<sub>0</sub></label>
+        <input required type="number" name="y-0" id="y-0">
+      </div>
+      <div class="input-container">
+        <label for="angle">Кут</label>
+        <input required type="number" min="0" max="360" name="angle" id="angle">
+      </div>
+      <div class="input-container">
+        <label for="v-0">Початкова швидкість</label>
+        <input required type="number" name="v-0" id="v-0">
+      </div>
+      <div class="input-container">
+        <label for="a">Прискорення</label>
+        <input required type="number" name="a" id="a">
+      </div>
+      <input required type="color" name="color" id="color">
+      <div class="btn-container">
+        <button class="btn-chart" onclick="addParticle()">графік</button>
+        <button class="btn-clear" onclick="clearParticles()">очистити</button>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+
+</html>
