@@ -54,7 +54,7 @@ function Particle(x0, y0, v0, angle, color, a) {
   this.y0 = parseFloat(y0)
   this.color = color
   this.v0 = parseFloat(v0)
-  this.a = parseFloat(a)
+  this.a = parseFloat(a) / 10
   this.angle = (-parseFloat(angle) * Math.PI) / 180
   this.startTime = Date.now()
   this.g = 9.8
@@ -66,8 +66,14 @@ function Particle(x0, y0, v0, angle, color, a) {
     let elapsedTime = currentTime - this.startTime
     let t = elapsedTime / 1000
 
-    let x = this.x0 + this.v0 * t * Math.cos(this.angle) + 0.5 * this.a * t ** 2
-    let y = this.y0 + this.v0 * t * Math.sin(this.angle) + 0.5 * this.g * t ** 2
+    let aX = this.a * Math.cos(this.angle)
+    let aY = this.a * Math.sin(this.angle) + this.g
+
+    let vX = this.v0 * Math.cos(this.angle)
+    let vY = this.v0 * Math.sin(this.angle)
+
+    let x = this.x0 + vX * t + 0.5 * aX * t ** 2
+    let y = this.y0 + vY * t + 0.5 * aY * t ** 2
 
     if (this.lastHeight === null) {
       this.lastHeight = { x: x, y: y }
@@ -84,20 +90,31 @@ function Particle(x0, y0, v0, angle, color, a) {
         .attr('r', 5)
         .style('fill', 'yellow')
 
-      let validatedX =
-        this.lastHeight.x > 0
-          ? (width / 2 - this.lastHeight.x) * -1
-          : Math.abs(width / 2 - this.lastHeight.x)
-      let validatedY =
-        this.lastHeight.y > 0
-          ? height / 2 - this.lastHeight.y
-          : Math.abs(this.lastHeight.y) + height / 2
+      let validatedY = height / 2 - this.lastHeight.y
 
       svg
         .append('text')
         .attr('x', this.lastHeight.x - 30)
-        .attr('y', this.lastHeight.y - 15)
-        .text(`MAX (${validatedX.toFixed(2)}, ${validatedY.toFixed(2)})`)
+        .attr('y', this.lastHeight.y - 35)
+        .text(`h(max) = ${validatedY.toFixed(2)} m`)
+        .attr('font-family', 'monospace')
+        .attr('font-weight', '600')
+        .attr('color', 'black')
+        .attr('z-index', '999')
+        .attr('font-size', '10px')
+    }
+
+
+    if (y > this.y0 && !this.infoPrinted) {
+      this.infoPrinted = true
+
+      let validatedX = x - width / 2
+
+      svg
+        .append('text')
+        .attr('x', this.lastHeight.x - 30)
+        .attr('y', this.lastHeight.y - 25)
+        .text(`d = ${validatedX.toFixed(2)} m, t = ${t.toFixed(2)} с`)
         .attr('font-family', 'monospace')
         .attr('font-weight', '600')
         .attr('color', 'black')
@@ -112,8 +129,10 @@ function Particle(x0, y0, v0, angle, color, a) {
       .attr('r', 5)
       .style('fill', this.color)
 
-    this.lastHeight.x = x
-    this.lastHeight.y = y
+    if (!this.isMaxPrinted) {
+      this.lastHeight.x = x
+      this.lastHeight.y = y
+    }
   }
 }
 
@@ -269,7 +288,7 @@ function Markup(scale) {
       .append('text')
       .attr('x', this.cX - 35)
       .attr('y', 18)
-      .text('(см)')
+      .text('(м)')
       .attr('font-family', 'monospace')
       .attr('font-size', '14px')
       .attr('font-weight', '600')
@@ -286,7 +305,7 @@ function Markup(scale) {
       .append('text')
       .attr('x', width - 35)
       .attr('y', this.cY - 10)
-      .text('(см)')
+      .text('(м)')
       .attr('font-family', 'monospace')
       .attr('font-size', '14px')
       .attr('font-weight', '600')
@@ -309,9 +328,9 @@ function animate() {
   board.draw()
   intervalID = setInterval(() => {
     particles.forEach(particle => {
-      if (particle.x < width) particle.draw()
+      if (particle.x < width || !particle.infoPrinted) particle.draw()
     })
-  }, 200)
+  }, 150)
 }
 
 animate()
