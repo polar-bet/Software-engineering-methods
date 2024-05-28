@@ -108,13 +108,13 @@ function Particle(x0, y0, v0, angle, color, a) {
     if (y > this.y0 && !this.infoPrinted) {
       this.infoPrinted = true
 
-      let validatedX = x - width / 2
+      let distance = x - x0
 
       svg
         .append('text')
         .attr('x', this.lastHeight.x - 30)
         .attr('y', this.lastHeight.y - 25)
-        .text(`d = ${validatedX.toFixed(2)} m, t = ${t.toFixed(2)} с`)
+        .text(`d = ${distance.toFixed(2)} m, t = ${t.toFixed(2)} с`)
         .attr('font-family', 'monospace')
         .attr('font-weight', '600')
         .attr('color', 'black')
@@ -328,7 +328,7 @@ function animate() {
   board.draw()
   intervalID = setInterval(() => {
     particles.forEach(particle => {
-      if (particle.x < width || !particle.infoPrinted) particle.draw()
+      if (!particle.infoPrinted) particle.draw()
     })
   }, 150)
 }

@@ -179,8 +179,8 @@ function Markup(scale) {
     c.fillText('y', this.cX - 50, 20)
     c.fillText('x', canvas.width - 45, this.cY - 10)
     c.font = '14px console'
-    c.fillText('(см)', this.cX - 35, 18)
-    c.fillText('(см)', canvas.width - 30, this.cY - 10)
+    c.fillText('(м)', this.cX - 35, 18)
+    c.fillText('(м)', canvas.width - 30, this.cY - 10)
 
     c.closePath()
   }

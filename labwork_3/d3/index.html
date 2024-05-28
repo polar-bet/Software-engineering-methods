@@ -14,24 +14,32 @@
     <div class="parameters">
       <div class="input-container">
         <label for="x-0">x<sub>0</sub></label>
-        <input required type="number" name="x-0" id="x-0">
+        <input required type="number" name="x-0" id="x-0" value="0">
       </div>
       <div class="input-container">
         <label for="y-0">y<sub>0</sub></label>
-        <input required type="number" name="y-0" id="y-0">
+        <input required type="number" name="y-0" id="y-0" value="0">
       </div>
       <div class="input-container">
-        <label for="angle">Кут (грудуси)</label>
-        <input required type="number" min="0" max="360" name="angle" id="angle">
+        <label for="angle">Кут (градус)</label>
+        <input required type="number" min="0" max="360" name="angle" id="angle" value="45">
       </div>
       <div class="input-container">
-        <label for="v-0">Початкова швидкість<br> 
-          (м/с)</label>
-        <input required type="number" name="v-0" id="v-0">
+        <label for="v-0">Початкова швидкість (м/с)</label>
+        <input required type="number" name="v-0" id="v-0" value="50">
       </div>
       <div class="input-container">
-        <label for="a">Прискорення<br> (м/с<sup>2</sup>)</label>
-        <input required type="number" name="a" id="a">
+        <label for="a">Прискорення (м/с<sup>2</sup>)</label>
+        <input required type="number" name="a" id="a" value="50">
+      </div>
+      <div class="input-container">
+        <label for="environment">Середовище</label>
+        <select name="environment" id="environment">
+          <option value="0">Відсутній</option>
+          <option value="0.002">Повітря</option>
+          <option value="0.1">Вода</option>
+          <option value="0.05">Гази</option>
+        </select>
       </div>
       <input required type="color" name="color" id="color">
       <div id="chart-container"></div>
@@ -40,8 +48,7 @@
         <button id="btn-clear" onclick="clearParticles()">очистити</button>
       </div>
     </div>
-    <script src="script.js">
-    </script>
+    <script src="script.js"></script>
   </body>
 
 </html>

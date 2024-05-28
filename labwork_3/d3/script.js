@@ -1,6 +1,7 @@
 const width = window.innerWidth - 100
 const height = window.innerHeight - 150
-
+let maxY = 0
+let intervalID = 0
 const svg = d3
   .select('body')
   .append('svg')
@@ -12,6 +13,7 @@ let particles = []
 let v0 = document.getElementById('v-0')
 let x0 = document.getElementById('x-0')
 let y0 = document.getElementById('y-0')
+let environment = document.getElementById('environment')
 let a = document.getElementById('a')
 let angle = document.getElementById('angle')
 let color = document.getElementById('color')
@@ -32,9 +34,10 @@ function addParticle() {
     validatedX,
     validatedY,
     v0.value,
-    a.value,
     angle.value,
-    color.value
+    color.value,
+    a.value,
+    environment.value
   )
   particles.push(particle)
 }
@@ -42,30 +45,89 @@ function addParticle() {
 function clearParticles() {
   particles = []
   svg.selectAll('*').remove()
+  clearInterval(intervalID)
+  animate()
 }
 
-function Particle(x0, y0, v0, a, angle, color) {
+function Particle(x0, y0, v0, angle, color, a, resistance) {
   this.x0 = parseFloat(x0)
   this.y0 = parseFloat(y0)
   this.color = color
   this.v0 = parseFloat(v0)
-  this.a = parseFloat(a)
+  this.a = parseFloat(a) / 10
   this.angle = (-parseFloat(angle) * Math.PI) / 180
   this.startTime = Date.now()
+  this.g = 9.8
+  this.lastHeight = null
+  this.resistance = parseFloat(resistance)
+  this.x = 0
 
   this.draw = () => {
     let currentTime = Date.now()
     let elapsedTime = currentTime - this.startTime
     let t = elapsedTime / 1000
 
-    let x =
-      this.x0 +
-      this.v0 * t * Math.cos(this.angle) +
-      ((a * t ** 2) / 2) * Math.cos(this.angle)
-    let y =
-      this.y0 +
-      this.v0 * t * Math.sin(this.angle) +
-      ((a * t ** 2) / 2) * Math.sin(this.angle)
+    let vX = this.v0 * Math.cos(this.angle)
+    let vY = this.v0 * Math.sin(this.angle)
+
+    // Incorporate drag resistance into velocity
+    let dragX = this.resistance * vX
+    let dragY = this.resistance * vY
+
+    vX -= dragX * t
+    vY -= dragY * t
+
+    let aX = this.a * Math.cos(this.angle)
+    let aY = this.a * Math.sin(this.angle) + this.g
+
+    let x = this.x0 + vX * t + 0.5 * aX * t ** 2
+    let y = this.y0 + vY * t + 0.5 * aY * t ** 2
+
+    if (this.lastHeight === null) {
+      this.lastHeight = { x: x, y: y }
+    }
+
+    this.x = x
+
+    if (this.lastHeight.y < y && !this.isMaxPrinted) {
+      this.isMaxPrinted = true
+      svg
+        .append('circle')
+        .attr('cx', this.lastHeight.x)
+        .attr('cy', this.lastHeight.y)
+        .attr('r', 5)
+        .style('fill', 'yellow')
+
+      let validatedY = height / 2 - this.lastHeight.y
+
+      svg
+        .append('text')
+        .attr('x', this.lastHeight.x - 30)
+        .attr('y', this.lastHeight.y - 35)
+        .text(`h(max) = ${validatedY.toFixed(2)} m`)
+        .attr('font-family', 'monospace')
+        .attr('font-weight', '600')
+        .attr('color', 'black')
+        .attr('z-index', '999')
+        .attr('font-size', '10px')
+    }
+
+    if (y > this.y0 && !this.infoPrinted) {
+      this.infoPrinted = true
+
+      let distance = x - x0
+
+      svg
+        .append('text')
+        .attr('x', this.lastHeight.x - 30)
+        .attr('y', this.lastHeight.y - 25)
+        .text(`d = ${distance.toFixed(2)} m, t = ${t.toFixed(2)} с`)
+        .attr('font-family', 'monospace')
+        .attr('font-weight', '600')
+        .attr('color', 'black')
+        .attr('z-index', '999')
+        .attr('font-size', '10px')
+    }
 
     svg
       .append('circle')
@@ -73,6 +135,11 @@ function Particle(x0, y0, v0, a, angle, color) {
       .attr('cy', y)
       .attr('r', 5)
       .style('fill', this.color)
+
+    if (!this.isMaxPrinted) {
+      this.lastHeight.x = x
+      this.lastHeight.y = y
+    }
   }
 }
 
@@ -264,14 +331,13 @@ function Board(scale) {
 }
 
 function animate() {
-  setInterval(() => {
+  let board = new Board(50)
+  board.draw()
+  intervalID = setInterval(() => {
     particles.forEach(particle => {
-      particle.draw()
+      if (!particle.infoPrinted) particle.draw()
     })
-
-    let board = new Board(50)
-    board.draw()
-  }, 500)
+  }, 150)
 }
 
 animate()
